@@ -57,12 +57,14 @@
     tags:
       Name: Public
     state: absent
+  when: eks_vpc_facts.vpcs[0] is defined
 
 - name: remove igw
   ec2_vpc_igw:
     vpc_id: '{{ eks_vpc_facts.vpcs[0].vpc_id }}'
     region: "{{ eks_region }}"
     state: absent
+  when: eks_vpc_facts.vpcs[0] is defined
 
 - name: find all security groups in the VPC
   ec2_group_info:
@@ -70,6 +72,7 @@
       vpc-id: '{{ eks_vpc_facts.vpcs[0].vpc_id }}'
     region: "{{ eks_region }}"
   register: ec2_groups
+  when: eks_vpc_facts.vpcs[0] is defined
 
 - name: set all security group rule lists to empty to remove circular dependency
   ec2_group:
@@ -83,6 +86,7 @@
     vpc_id: '{{ eks_vpc_facts.vpcs[0].vpc_id }}'
     region: "{{ eks_region }}"
   loop: "{{ ec2_groups.security_groups }}"
+  when: ec2_groups.security_groups is defined
 
 - name: remove security groups
   ec2_group:
@@ -91,7 +95,7 @@
     vpc_id: '{{ eks_vpc_facts.vpcs[0].vpc_id }}'
     region: "{{ eks_region }}"
   loop: "{{ ec2_groups.security_groups }}"
-  when: "item.group_name != 'default'"
+  when: ec2_groups.security_groups is defined and "item.group_name != 'default'"
 
 - name: remove setup subnet
   ec2_vpc_subnet:
@@ -101,6 +105,7 @@
     state: absent
     region: "{{ eks_region }}"
   loop: "{{ eks_subnets }}"
+  when: eks_subnets is defined and eks_vpc_facts.vpcs[0] is defined
 
 - name: remove setup VPC
   ec2_vpc_net:
