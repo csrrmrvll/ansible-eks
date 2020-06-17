@@ -1,4 +1,4 @@
-eks_kubeconfig_env:
+veks_kubeconfig_env:
     - name: AWS_PROFILE
       value: default
 veks_cluster_name: bsab-eks-test
