@@ -1,0 +1,7 @@
+eks_kubeconfig_env:
+    - name: AWS_PROFILE
+      value: default
+veks_cluster_name: bsab-eks-test
+veks_region: us-east-1
+veks_ami_id: ami-0ee0652ac0722f0e3
+kube_domain_name: eks.lab.aws.bancsabadell.com
