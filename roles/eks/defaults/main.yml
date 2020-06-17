@@ -18,7 +18,7 @@ eks_lc_name: "{{ eks_cluster_name }}-nodes"
 eks_lifecycle_hook_name: "{{ eks_cluster_name }}-nodes-lifecycle-hook"
 eks_worker_role_name: eksWorkerRole
 eks_cluster_role_name: eksClusterRole
-eks_kubeconfig_env: []
+eks_kubeconfig_env: "{{ veks_kubeconfig_env | default([]) }}"
 eks_action: setup
 eks_bootstrap_arguments: ""
 
