@@ -1,8 +1,7 @@
 - hosts: localhost
   connection: local
   vars:
-    kube_resource_namespace: "{{ env }}"
-
+    kube_resource_namespace: "{{ env | default('') }}"
 
   roles:
     - eks
@@ -14,9 +13,11 @@
         kind: Namespace
         name: "{{ kube_resource_namespace }}"
         state: present
+      when: kube_resource_namespace != ''
 
     - name: create an ansible shell inside the cluster
       k8s:
         definition: "{{ item }}"
         kubeconfig: "{{ eks_kubeconfig }}"
       loop: "{{ lookup('template', playbook_dir + '/templates/ansible-shell/manifest.yml') | from_yaml_all | list }}"
+      when: kube_resource_namespace != ''
