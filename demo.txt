@@ -1,0 +1,16 @@
+export CLUSTER_NAME=cluster-name
+export K8S_AUTH_KUBECONFIG=~/.kube/${CLUSTER_NAME}.config
+ansible-playbook playbooks/eks.yml -vv -e @overrides.yml -e env=test --ask-vault-pass
+kubectl --kubeconfig ${K8S_AUTH_KUBECONFIG} exec -it -n test ansible-shell sh
+ansible-playbook playbooks/deploy.yml -e application=docker-debug-unversioned -e env=test -e version=v1 -vv -e @overrides.yml
+ansible-playbook playbooks/deploy.yml -e application=docker-debug-unversioned -e env=test -e version=v2 -vv -e @overrides.yml
+ansible-playbook playbooks/deploy.yml -e application=docker-debug-unversioned -e env=test -e version=v3 -vv -e @overrides.yml
+PATCH='{"spec":{"template":{"metadata":{"labels":{"reload":"'$(date +%Y%m%d-%H%M%S)'"}}}}}'
+kubectl patch -n test deploy test-docker-debug-unversioned -p "$PATCH" --kubeconfig ${K8S_AUTH_KUBECONFIG}
+ansible-playbook playbooks/deploy.yml -e application=docker-debug-unversioned -e env=test -e version=v2 -vv -e @overrides.yml
+PATCH='{"spec":{"template":{"metadata":{"labels":{"reload":"'$(date +%Y%m%d-%H%M%S)'"}}}}}'
+kubectl patch -n test deploy test-docker-debug-unversioned -p "$PATCH" --kubeconfig ${K8S_AUTH_KUBECONFIG}
+ansible-playbook playbooks/deploy.yml -e application=docker-debug-unversioned -e env=test -e version=v3 -vv -e @overrides.yml
+ansible-playbook playbooks/deploy.yml -e application=docker-debug-versioned -e env=test -e version=v2 -vv -e @overrides.yml
+ansible-playbook playbooks/deploy.yml -e application=docker-debug-versioned -e env=test -e version=v3 -vv -e @overrides.yml
+ansible-playbook playbooks/eks.yml -vv -e @overrides.yml  -e env=test -e eks_action=teardown

@@ -1,0 +1,68 @@
+---
+# defaults file for eks
+eks_cluster_name: "{{ veks_cluster_name | default('bsab-eks-test') }}"
+eks_key_name: "{{ eks_key_file }}"
+eks_key_file: "{{ eks_cluster_name }}"
+eks_region: "{{ veks_region | default('eu-west-1') }}"
+eks_vpc_cidr: "{{ veks_vpc_cidr | default('10.0.0.0/16') }}"
+eks_vpc_name: "{{ veks_vpc_name | default(eks_cluster_name + '_vpc') }}"
+
+eks_kubeconfig: ~/.kube/{{ eks_cluster_name }}.config
+eks_ami_id: "{{ veks_ami_id | default('ami-0a3879f5c5e608624') }}"
+eks_instance_type: "{{ veks_instance_type | default('t2.small') }}"
+eks_min_size: "{{ veks_min_size | default('3') }}"
+eks_max_size: "{{ veks_max_size | default('3') }}"
+eks_desired_capacity: "{{ veks_desired_size | default('3') }}"
+eks_asg_name: "{{ eks_cluster_name }}-nodes"
+eks_lc_name: "{{ eks_cluster_name }}-nodes"
+eks_lifecycle_hook_name: "{{ eks_cluster_name }}-nodes-lifecycle-hook"
+eks_worker_role_name: eksWorkerRole
+eks_cluster_role_name: eksClusterRole
+eks_kubeconfig_env: []
+eks_action: setup
+eks_bootstrap_arguments: ""
+
+eks_subnets:
+  - cidr: "{{ veks_subnet_cidr_a | default('10.0.1.0/24') }}"
+    zone: a
+  - cidr: "{{ veks_subnet_cidr_b | default('10.0.2.0/24') }}"
+    zone: b
+  - cidr: "{{ veks_subnet_cidr_c | default('10.0.3.0/24') }}"
+    zone: c
+
+eks_security_groups:
+  - name: "{{ eks_cluster_name }}-control-plane-sg"
+    description: "EKS Control Plane Security Group"
+    rules:
+      - group_name: "{{ eks_cluster_name }}-workers-sg"
+        group_desc: "EKS Worker Security Group"
+        ports: 443
+        proto: tcp
+    rules_egress:
+      - group_name: "{{ eks_cluster_name }}-workers-sg"
+        group_desc: "EKS Worker Security Group"
+        from_port: 1025
+        to_port: 65535
+        proto: tcp
+  - name: "{{ eks_cluster_name }}-workers-sg"
+    description: "EKS Worker Security Group"
+    rules:
+      - group_name: "{{ eks_cluster_name }}-workers-sg"
+        proto: tcp
+        from_port: 1
+        to_port: 65535
+      - group_name: "{{ eks_cluster_name }}-control-plane-sg"
+        ports: 10250
+        proto: tcp
+      - ports: 22
+        proto: tcp
+        cidr_ip: 0.0.0.0/0
+      - from_port: 1
+        to_port: 65535
+        cidr_ip:
+          - "{{ eks_subnets[0].cidr }}"
+          - "{{ eks_subnets[1].cidr }}"
+          - "{{ eks_subnets[2].cidr }}"
+    tags:
+      KubernetesCluster: "{{ eks_cluster_name }}"
+      Project: "Proteo 4"
