@@ -83,6 +83,7 @@
     rules_egress: []
     purge_rules: yes
     purge_rules_egress: yes
+    purge_tags: yes
     vpc_id: '{{ eks_vpc_facts.vpcs[0].vpc_id }}'
     region: "{{ eks_region }}"
   loop: "{{ ec2_groups.security_groups }}"
@@ -95,7 +96,7 @@
     vpc_id: '{{ eks_vpc_facts.vpcs[0].vpc_id }}'
     region: "{{ eks_region }}"
   loop: "{{ ec2_groups.security_groups }}"
-  when: ec2_groups.security_groups is defined and "item.group_name != 'default'"
+  when: ec2_groups.security_groups is defined and item.group_name != 'default'
 
 - name: remove setup subnet
   ec2_vpc_subnet:
