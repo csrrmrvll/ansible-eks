@@ -4,7 +4,7 @@ This example demonstrates the setup of a highly-available AWS EKS Kubernetes clu
 
 ## Usage
 
-Instructions for EKS are in roles/eks/README.md
+Instructions for EKS are in playbooks/roles/eks/README.md
 
 Prerequisites:
 
