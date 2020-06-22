@@ -18,4 +18,4 @@ kubectl --kubeconfig ${K8S_AUTH_KUBECONFIG} exec -it -n test ansible-shell sh
 /app $ ansible-playbook playbooks/deploy.yml -e application=docker-debug-versioned -e env=test -e version=v2 -vv -e @overrides.yml
 /app $ ansible-playbook playbooks/deploy.yml -e application=docker-debug-versioned -e env=test -e version=v3 -vv -e @overrides.yml
 /app $ exit
-ansible-playbook playbooks/eks.yml -i inventory -vv -e @overrides.yml  -e env=test -e eks_action=teardown
+ansible-playbook playbooks/eks.yml -i inventory -vv -e @overrides.yml -e eks_action=teardown

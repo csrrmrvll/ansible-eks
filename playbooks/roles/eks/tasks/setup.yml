@@ -138,7 +138,8 @@
   set_fact:
     eks_asg_tags: >
       {{ eks_asg_tags|default([]) + [{'kubernetes.io/cluster/' + eks_cluster_name: 'owned',
-                                     'propagate_at_launch': 'true'}] }}
+                                     'propagate_at_launch': 'true',
+                                     'project': 'proteo4'}] }}
 - name: ensure autoscaling group exists
   ec2_asg:
     name: "{{ eks_cluster_name }}-nodes"
