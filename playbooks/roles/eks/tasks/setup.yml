@@ -36,7 +36,7 @@
     region: "{{ eks_region }}"
   register: eks_vpc_results
 
-- name: ensure subnets exisst
+- name: ensure subnets exist
   ec2_vpc_subnet:
     vpc_id: "{{ eks_vpc_results.vpc.id }}"
     az: "{{ eks_region}}{{ item.zone }}"
