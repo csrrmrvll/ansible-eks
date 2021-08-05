@@ -1,0 +1,8 @@
+veks_kubeconfig_env:
+    - name: AWS_PROFILE
+      value: default
+veks_cluster_name: your-cluster-name
+veks_region: your-aws-region
+veks_ami_id: your-ami-id
+kube_domain_name: your-kube-domain-name
+
